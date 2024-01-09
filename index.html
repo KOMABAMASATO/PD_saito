@@ -22,6 +22,8 @@
   <script src="./js/top.js"></script>
   <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/Modaal/0.4.4/css/modaal.min.css">
   <link rel="stylesheet" type="text/css" href="css/style.css">
+  <link rel="stylesheet" type="text/css" href="http://coco-factory.jp/ugokuweb/wp-content/themes/ugokuweb/data/move02/7-1/css/7-1.css">
+  <link rel="stylesheet" type="text/css" href="pictures_size.css">
 </head>
 <body>
   <header class="header">
@@ -77,7 +79,11 @@
       <ul class="events-list">
         <li>
           <a href="gaiyo.html">
-            <figure><img src="./img/gogo.jpg" alt="スタジアム"></figure>
+            <figure>
+              <div class="zoomIn">
+                <img src="./img/gogo.jpg" alt="スタジアム">
+              </div>
+            </figure>
             <div class="events-info">
               <p class="events-title">スタジアムの概要</p>
               <p class="events-txt">ここでスタジアムに関する情報が見れるよ！</p>
@@ -86,7 +92,11 @@
         </li>
         <li>
           <a href="yoso.html">
-            <figure><img src="./img/VS.svg" alt="試合予想"></figure>
+            <figure>
+              <div class="zoomIn">
+                <img src="./img/VS.svg" alt="試合予想">
+              </div> 
+            </figure>
             <div class="events-info">
               <p class="events-title">試合予想</p>
               <p class="events-txt">ここで直近の試合予想が見れるよ！</p>
@@ -95,7 +105,11 @@
         </li>
         <li>
           <a href="akusesu.html">
-            <figure><img src="./img/akusesu.png" alt="アクセス方法"></figure>
+            <figure>
+              <div class="zoomIn">
+              <img src="./img/akusesu.png" alt="アクセス方法">
+              </div>
+            </figure>
             <div class="events-info">
               <p class="events-title">アクセス</p>
               <p class="events-txt">場所を把握し、ツエーゲン金沢を応援しに行こう！</p>
@@ -103,6 +117,25 @@
           </a>
         </li>
       </ul>
+      <style>
+        /* 写真のサイズを統一するスタイル */
+        .events-list li a figure .zoomIn img 
+        {
+          width: 100%;
+          height: auto;
+          margin-top: 32px;
+        }
+    
+        /* 写真拡大機能のスタイル */
+        .zoomIn {
+          position: relative;
+        }
+    
+        .zoomIn:hover img {
+          transform: scale(1.2);
+          transition: transform 0.3s ease;
+        }
+      </style>
       <!-- /.events-list -->
       <a href="#" class="btn-more">もっと見る<span class="material-icons">navigate_next</span></a>
     </section>
