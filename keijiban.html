@@ -4,9 +4,96 @@
     <meta charset="UTF-8">
     <title>ツエーゲン金沢掲示板</title>
     <style>
-        /* ここにスタイルを追加する */
+        /* 基本的なスタイリング */
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* ページ全体のコンテナ */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* フォームとボタン */
+        input[type=text],
+        textarea {
+            border: 1px solid #ccc;
+            box-shadow: inset 0 1px 3px #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            font-size: 14px;
+            margin-bottom: 10px
+        }
+
+        button {
+            padding: 5px 10px;
+            background-color: #5cb85c;
+            border-color: #4cae4c;
+            color: white;
+            font-size: 16px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s, box-shadow 0.3;
+        }
+
+        .button-large {
+            padding: 10px 20px;
+            font-size:16px;
+        }
+
+        .btn-small {
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+
+        button:hover {
+            background-color: #449d44;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        h1, h2 {
+            color: #333;
+            text-align: center;
+        }
+
+        /* 投稿 */
+        .post {
+            background-color: white;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        /* モーダルウィンドウ */
+        .modal-content {
+            width: 50%; /* モーダルの幅を調整 */
+            /* その他のスタイリング */
+        }
+
+        /* レスポンシブデザイン */
+        @media screen and (max-width: 768px) {
+            input[type=text],
+            textarea,
+            button {
+                width: 100%;
+                box-sizing: border-box;
+            }
+        }
+
         section {
-            margin-top: 20px;
+            background-color: white;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin: 20px;
         }
 
         .post {
@@ -17,7 +104,7 @@
 
         .post span.name {
             font-weight: bold;
-            color: #007bff; /* 任意の色を指定 */
+            color: #007bff;
         }
 
         .deleteButton {
@@ -25,18 +112,105 @@
         }
 
         #timeRemaining {
-            color: red; /* 残り時間を目立たせるための色 */
+            color: red;
         }
+
+        #pagination {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .page-button {
+            margin: 0 5px;
+        }
+
+        .post-image {
+            max-width: 100%;
+            max-height: 300px;
+        }
+
+        .selected-page-button {
+            color: red; /* 選択されたページのボタンの色 */
+            font-weight: bold; /* テキストを太字に */
+        }
+
+        /* モーダルウィンドウのスタイル */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
+
+        .close {
+            color: #aa0000;
+            float: right;
+            font-size: 40px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #ff0000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* 注意事項ボタンのスタイル */
+        .notice-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        /* 検索ボタンのスタイルを追加 */
+        #searchButton {
+            position: absolute;
+            top: 10px;
+            right: 100px; /* 適切な値に調整 */
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer            
+        }
+
     </style>
 </head>
 <body>
+    <!-- 注意事項ボタンの挿入 -->
+    <button class="notice-button" id="noticeButton">注意事項</button>
     <h1>ツエーゲン金沢掲示板</h1>
+
     <section>
-        <h2>新規投稿</h2>
         <form id="postForm">
             名前：<input type="text" name="name" id="name"><br>
-            本文：<textarea name="section" id="content" rows="3"></textarea><br>
-            <button type="button" onclick="addPost()" id="postButton">投稿する</button>
+            本文：<textarea name="section" id="content" rows="3" maxlength="400" oninput="updateCharacterCount()"></textarea><br>
+            <span id="remainingCharacters">残り文字数： 400</span><br>
+            画像：<input type="file" name="image" id="image" onchange="previewImage()"><br>
+            <button type="button" onclick="addPost()" id="postButton" class="btn-large">投稿する</button>
+
+            <!-- 削除ボタンには小さめのスタイルを適用-->
+            <!-- <button class="deleteButton btn-small">削除</button> -->
+
             <span id="timeRemaining"></span>
         </form>
     </section>
@@ -45,12 +219,52 @@
         <div id="postList"></div>
     </section>
 
-    <script>
+    <div id="pagination">
+        <button id="prevButton" class="page-button">前へ</button>
+        <span id="pageNumbers"></span>
+        <button id="nextButton" class="page-button">次へ</button>
+    </div>
+
+    <img id="imagePreview" style="display: none; max-width: 100%; max-height: 300px;">
+
+    <!-- モーダルウィンドウ -->
+    <div id="noticeModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>注意事項</h2>
+            <p>個人情報や他人のプライバシーに関する情報を公開しないでください</p>
+            <p>他のユーザーに対して敬意を払い、礼儀正しく振る舞って下さい</p>
+            <p>違法な内容や著作権を侵害するコンテンツの投稿を避けて下さい</p>
+            <p>人種、性別、宗教、国政などに基づく差別的な発言は厳禁です</p>
+        </div>
+    </div>
+
+    <!-- 検索ボタンと検索モーダルウィンドウを追加-->
+    <div id="searchModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeSearchModal">&times;</span>
+            <h2>検索</h2>
+            ユーザー名：<input type="text" id="searchName" placeholder="ユーザー名で検索...">
+            投稿内容：<input type="text" id="searchContent" placeholder="投稿内容で検索...">
+            <button onclick="searchPosts()">検索する</button>
+        </div>
+    </div>
+
+    <!-- 検索モーダル内に検索結果セクションを追加 -->
+    <div id="searchResults" class="search-results">
+        <!-- 検索結果がここに表示される-->
+    </div>
+
+    <!-- 検索ボタンのインラインスタイルを削除 -->
+    <button class="notice-button" id="searchButton">検索</button>
+        <script>
         var postButton = document.getElementById("postButton");
         var timeRemainingSpan = document.getElementById("timeRemaining");
         var isButtonEnabled = true;
         var remainingTime = 0;
-        var postCount = 0; // Add post count variable
+        var postCount = 0;
+        var currentPage = 0;
+        var postsPerPage = 3;
 
         function enablePostButton() {
             isButtonEnabled = true;
@@ -77,7 +291,6 @@
             timeRemainingSpan.innerText = "次の投稿まで: " + remainingTime + "秒";
         }
 
-        // 禁止ワードのリスト
         var forbiddenWords = ["禁止ワード1", "禁止ワード2", "禁止ワード3"];
 
         function containsForbiddenWord(text) {
@@ -89,73 +302,294 @@
             return false;
         }
 
+        function updateCharacterCount() {
+            var content = document.getElementById("content").value;
+            var remainingCharacters = 400 - content.length;
+            document.getElementById("remainingCharacters").innerText = "残り文字数：" + remainingCharacters;
+        }
+
         function addPost() {
             if (!isButtonEnabled) {
                 alert("5秒間隔でしか投稿できません");
                 return;
             }
 
-            // フォームから入力値を取得
             var name = document.getElementById("name").value;
             var content = document.getElementById("content").value;
+            var image = document.getElementById("image").files[0];
 
-            // 入力がない場合は何もしない
             if (!name || !content) {
                 alert("名前と本文を入力してください");
                 return;
             }
 
-            // 禁止ワードが含まれているかチェック
+            if (content.length > 400) {
+                alert("本文は400文字までです");
+                return;
+            }
+
+            var remainingCharacters = 400 - content.length;
+            document.getElementById("remainingCharacters").innerText = "残り文字数：" + remainingCharacters;
+
             if (containsForbiddenWord(name) || containsForbiddenWord(content)) {
                 alert("禁止ワードが含まれています");
                 return;
             }
 
-            // 投稿を表示する要素を取得
             var postList = document.getElementById("postList");
-
-            // 新しい投稿要素を作成
             var postElement = document.createElement("div");
             postElement.classList.add("post");
-
-            // 名前を表示するための span 要素を作成
             var nameSpan = document.createElement("span");
             nameSpan.classList.add("name");
             nameSpan.innerText = name;
 
-            // Get the current date and time
             var currentDate = new Date();
-            var formattedDate = currentDate.getFullYear() + '/' + (currentDate.getMonth() + 1) + '/' + currentDate.getDate();
-            var formattedTime = currentDate.getHours() + ':' + currentDate.getMinutes();
+            var formattedMonth = ('0' + (currentDate.getMonth() + 1)).slice(-2);
+            var formattedDay = ('0' + currentDate.getDate()).slice(-2);
+            var formattedDate = currentDate.getFullYear() + '/' + formattedMonth + '/' + formattedDay;
+            var formattedTime = currentDate.getHours() + ':' + ('0' + currentDate.getMinutes()).slice(-2);
 
-            // Increment post count
             postCount++;
-
-            // 投稿要素に名前と本文、日時、番号を追加
             postElement.innerHTML = "<span style='font-weight: bold;'>投稿番号: " + postCount + "</span><br>";
             postElement.appendChild(nameSpan);
             postElement.innerHTML += "<br>" + content + "<br>" + formattedDate + " " + formattedTime;
 
-            // Add delete button
+            var imageElement = document.createElement("img");
+            imageElement.classList.add("post-image");
+
+            if (image) {
+                var imageURL = URL.createObjectURL(image);
+                imageElement.src = imageURL;
+                imageElement.onload = function() {
+                    URL.revokeObjectURL(imageElement.src) // メモリリークを防ぐ
+                };
+            } else {
+                imageElement.style.display = "none";
+            }
+            postElement.appendChild(imageElement);
+
             var deleteButton = document.createElement("button");
             deleteButton.classList.add("deleteButton");
+            deleteButton.classList.add("deleteButton", "btn-small");
             deleteButton.innerText = "削除";
             deleteButton.onclick = function () {
                 if (window.confirm("本当に削除しますか？")) {
-                    postList.removeChild(postElement);
+                    postElement.remove();
+                    postCount--;
+                    updatePageNumbers(); // ページ数を更新
                 }
             };
             postElement.appendChild(deleteButton);
 
-            // 投稿一覧に追加
             postList.appendChild(postElement);
-
-            // フォームをクリア
-            document.getElementById("postForm").reset();
-
-            // ボタンを無効にする
+            postList.insertBefore(postElement, postList.firstChild);
+            document.getElementById("content").value = ""; // 本文フィールドをリセット
+            document.getElementById("image").value = ""; //画像フィールドをリセット
+            document.getElementById("imagePreview").style.display = "none"; 
+            updateCharacterCount();
             disablePostButton();
+            updatePageNumbers(); // 新しい投稿が追加されたのでページ数を更新
         }
+
+        function previewImage() {
+            var imagePreview = document.getElementById("imagePreview");
+            var imageInput = document.getElementById("image");
+            var image = imageInput.files[0];
+
+            if (image) {
+                var imageURL = URL.createObjectURL(image);
+                imagePreview.src = imageURL;
+                imagePreview.onload = function() {
+                    URL.revokeObjectURL(imagePreview.src) // メモリリークを防ぐ
+                };
+                imagePreview.style.display = "block";
+            } else {
+                imagePreview.style.display = "none";
+            }
+        }
+
+        function showPage(page) {
+            var postElements = document.getElementsByClassName("post");
+            var totalPosts = postElements.length;
+            var start = page * postsPerPage;
+            var end = start + postsPerPage;
+
+            for (var i = 0; i < totalPosts; i++) {
+                postElements[i].style.display = "none";
+            }
+
+            for (var i = start; i < end && i < totalPosts; i++) {
+                postElements[i].style.display = "";
+            }
+
+            updatePageNumbers();
+        }
+
+        function updatePageNumbers() {
+            var pageNumberContainer = document.getElementById('pageNumbers');
+            pageNumberContainer.innerHTML = '';
+
+            var totalPosts = document.getElementsByClassName('post').length;
+            var totalPages = Math.ceil(totalPosts / postsPerPage);
+            var startPage = Math.max(currentPage - 2, 0);
+            var endPage = Math.min(currentPage + 2, totalPages - 1);
+
+            // 先頭のページへのリンク
+            if (startPage > 0) {
+                addPageButton(pageNumberContainer, 0, '<<');
+                if (startPage > 1) {
+                    pageNumberContainer.appendChild(document.createTextNode('... '));
+                }
+            }
+
+            // ページボタンを追加
+            for (let i = startPage; i <= endPage; i++) {
+                addPageButton(pageNumberContainer, i, i + 1);
+            }
+
+            // 末尾ページへのリンク
+            if (endPage < totalPages - 1) {
+                if (endPage < totalPages - 2) {
+                    pageNumberContainer.appendChild(document.createTextNode(' ...'));
+                }
+                addPageButton(pageNumberContainer, totalPages - 1, '>>');
+            }
+        }
+
+        function addPageButton(container, page, text) {
+            let pageButton = document.createElement("button");
+            pageButton.innerText = text;
+            pageButton.className = "page-button";
+            if (page === currentPage) {
+                pageButton.classList.add("selected-page-button"); // 選択されたページのスタイルを適用
+            }
+            pageButton.onclick = function() {
+                currentPage = page;
+                showPage(currentPage);
+            };
+            container.appendChild(pageButton);
+        }
+
+        document.getElementById('nextButton').addEventListener('click', function() {
+            if ((currentPage + 1) * postsPerPage < postCount) {
+                currentPage++;
+                showPage(currentPage);
+            }
+        });
+
+        document.getElementById('prevButton').addEventListener('click', function() {
+            if (currentPage > 0) {
+                currentPage--;
+                showPage(currentPage);
+            }
+        });
+
+        // モーダルウィンドウの制御
+        var modal = document.getElementById("noticeModal");
+        var btn = document.getElementById("noticeButton");
+        var span = document.getElementsByClassName("close")[0];
+
+        btn.onclick = function() {
+            modal.style.display = "block";
+        }
+
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        // 既存のJavaScriptコードの末尾にこのコードを追加
+
+        function searchPosts() {
+            var searchName = document.getElementById('searchName').value.toLowerCase();
+            var searchContent = document.getElementById('searchContent').value.toLowerCase();
+            var posts = document.getElementsByClassName('post');
+            var postList = document.getElementById('postList');
+            var found = false; // 検索結果が見つかったかどうかのフラグ
+
+            // 検索結果の表示
+            var searchResultsDiv = document.getElementById('searchResults');
+            searchResultsDiv.innerHTML = ''; // 既存の検索結果をクリア
+
+            // すべての投稿を一旦非表示にする
+            for (var i = 0; i < posts.length; i++) {
+                posts[i].style.display = 'none';
+            }    
+
+            // 一致する投稿を探す
+            for (var i = 0; i < posts.length; i++) {
+                var post = posts[i];
+                // ユーザー名と投稿内容を分離して取得
+                var name = post.getElementsByClassName('name')[0].innerText.toLowerCase();
+                var content = post.innerText.toLowerCase().replace(name, ''); // ユーザー名を除外
+
+                // ユーザー名と投稿内容の両方、またはどちらかが一致する場合に表示
+                if ((searchName === "" || name.includes(searchName)) && 
+                    (searchContent === "" || content.includes(searchContent))) {
+                    post.style.display = ''; // 一致する投稿を表示
+                    found = true;
+                    }
+                }
+
+                // 検索結果が1つも見つからなかった場合の処理
+                if (!found) {
+                    postList.innerHTML = "該当する投稿が見つかりませんでした。"; //ここで検索結果のメッセージを表示
+                }
+            }
+        
+
+        // 検索モーダルウィンドウを表示する関数
+        var searchModal = document.getElementById("searchModal");
+        var searchButton = document.getElementById("searchButton");
+        searchButton.onclick = function() {
+            searchModal.style.display = "block";
+        }
+
+        // モーダルウィンドウ外をクリックした時に閉じる機能
+        window.onclick = function(event) {
+            if (event.target == searchModal) {
+                searchModal.style.display = "none";
+            }
+        }
+
+        // 検索モーダルウィンドウを閉じるための関数
+        function closeSearchModal() {
+            searchModal.style.display = "none";
+
+            // 検索結果をクリア
+            var posts = document.getElementsByClassName('post');
+            for (var i = 0; i < posts.length; i++) {
+                posts[i].style.display = '';
+            }
+
+            // 元の投稿リストを表示
+            showPage(currentPage);
+        }
+
+        showPage(0); // 最初のページを表示
+
+        // モーダルウィンドウのクローズボタンを正しく機能させる
+        function setupCloseButtons() {
+            var closeButtons = document.getElementsByClassName('close');
+            for (var i = 0; i < closeButtons.length; i++) {
+                closeButtons[i].onclick = function() {
+                    this.parentElement.parentElement.style.display = 'none';
+                    closeSearchModal(); // 検索モーダルを閉じる際に元の状態に戻る
+                };
+            }
+        }
+
+        // ページの読み込みが完了したら、クローズボタンのセットアップを実行
+        window.onload = setupCloseButtons;
+
+        // 最初のページを表示するための関数
+        showPage(0);
+
     </script>
 </body>
 </html>
