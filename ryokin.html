@@ -3,59 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ticket Information</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        header, section, footer {
-            margin-bottom: 20px;
-        }
-        h1, h2 {
-            color: #333;
-        }
-        p {
-            color: #666;
-        }
-        .ticket-details {
-            border: 1px solid #ccc;
-            padding: 10px;
-        }
-    </style>
+  <style>
+    /* スタイル付け */
+div {
+    position: relative;
+    width: 500px;
+    margin: 200px auto;
+}
+
+div span {
+    display: none;
+}
+
+div img:hover + span {
+    position: absolute;
+    top:0px;
+    left:310px;
+    display: block;
+    background: #eeeeee;
+    padding: 10px;
+    border: 1px solid;
+}
+  </style>
 </head>
-<body>
 
-    <header>
-        <h1>Event Name</h1>
-        <p>Date: January 1, 2023</p>
-        <p>Location: Venue Name</p>
-    </header>
-
-    <section>
-        <h2>Ticket Information</h2>
-        <div class="ticket-details">
-            <p><strong>Ticket Type:</strong> General Admission</p>
-            <p><strong>Price:</strong> $20.00</p>
-            <p><strong>Availability:</strong> Limited quantity available</p>
-        </div>
-
-        <div class="ticket-details">
-            <p><strong>Ticket Type:</strong> VIP</p>
-            <p><strong>Price:</strong> $50.00</p>
-            <p><strong>Availability:</strong> Sold out</p>
-        </div>
-    </section>
-
-    <section>
-        <h2>Ticket Sales</h2>
-        <p>Tickets are available for purchase online. Get your tickets now!</p>
-        <a href="https://example.com/ticket-sales" target="_blank">Buy Tickets</a>
-    </section>
-
-    <footer>
-        <p>Contact: info@example.com</p>
-    </footer>
 
 </body>
+  <h1>座席別によるチケット料金</h1>
+
+        <header class="header">
+          <h1 class="header-logo"><img src="./img/zaseki7.png" alt="座席" width="750px" ></h1>
+          <button type="button" id="header-btn" class="header-btn" title="メニュー開閉"><span></span></button>
+          <nav class="header-gnav">
+            <div style="position:absolute; top:30px; left: 800px"> 
+              BACK STAND側<br>
+              <img src="img/zaseki1.png" width="400px" height="106px" alt="座席１">
+              <span>座席料金：5000円</span>
+              </div>
+              <div style="position:absolute; top:250px; left:800px">
+              MAIN STAND側<br>
+              <img src="img/zaseki4.png" width="400px" alt="座席4" >
+              <span>座席料金：7000円</span>
+              </div>
+              <div style="position:absolute; top:450px; left:800px">
+              MAIN STANDの奥側<br>
+              <img src="img/zaseki5.png" width="400px" alt="座席５" >
+              <span>座席料金：10000円</span>
+              </div>
+              <div style="position:absolute; top:620px; left:800px">
+              SOUTH SIDE STAND側<br>
+              <img src="img/zaseki3.png" width="100px" alt="座席３" >
+              <span>座席料金：4000円</span>
+              </div>
+            
+
+</body>
+
 </html>
