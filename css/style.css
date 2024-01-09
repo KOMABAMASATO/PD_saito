@@ -488,3 +488,16 @@ color:#29a029;
 .events-info{
   margin-top: 16px;
 }
+/* Add this style to hide the modal initially */
+#info {
+  display: none;
+}
+@media only screen and (max-width: 767px) {
+  /* スマートフォン用のスタイル */
+  /* ここにスタイルを追加 */
+}
+img {
+  max-width: 100%;
+  height: auto;
+}
+
